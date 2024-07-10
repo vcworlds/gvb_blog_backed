@@ -8,7 +8,7 @@ type Mysql struct {
 	DB       string `yaml:"db"`
 	User     string `yaml:"user"`
 	Password string `yaml:"password"`
-	LogLevel string `yaml:"level"`
+	LogLevel string `yaml:"level"` // 日志等级
 }
 
 func (m *Mysql) Dsn() string {

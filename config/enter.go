@@ -1,7 +1,7 @@
 package config
 
 type Config struct {
-	Mysql
-	Logger
-	System
+	Mysql  Mysql  `yaml:"mysql"`
+	Logger Logger `yaml:"logger"`
+	System System `yaml:"system"`
 }
