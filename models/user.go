@@ -2,20 +2,21 @@ package models
 
 import "gvb_blog/models/ctype"
 
+// UserModel 用户表
 type UserModel struct {
 	MODEL
-	NickName      string `json:"nickName" gorm:"size:32"`
-	UserName      string `json:"userName" gorm:"size:32"`
-	Password      string `json:"password" gorm:"size:128"`
-	Salt          string `json:"salt"` // 密码盐
-	Avatar        string `json:"avatar" gorm:"size:26"`
-	Email         string `json:"email" gorm:"size:128"`
-	Phone         string `json:"phone" gorm:"size:18"`
-	Addr          string `json:"addr"`
-	Role          ctype.Role
-	Token         string           `json:"token" gorm:"size:64"`
-	Ip            string           `json:"ip"`
-	SignStatus    ctype.SignStatus `json:"signStatus"`
-	ArticleModel  []ArticleModel   `json:"articleModel" gorm:"joinForeignKey:AuthId"`                                                    //文章列表
-	CollectsModel []ArticleModel   `json:"collectsModel" gorm:"many2many:auth2_collects;joinForeignKey:AuthId;JoinReferences:ArticleId"` //收藏文章
+	NickName      string           `gorm:"size:42" json:"nick_name"`                                                                     // 昵称
+	UserName      string           `gorm:"size:36" json:"user_name"`                                                                     // 用户名
+	Password      string           `gorm:"size:128" json:"password"`                                                                     // 密码
+	Salt          string           `json:"salt"`                                                                                         // 密码盐
+	Avatar        string           `gorm:"size:26" json:"avatar"`                                                                        // 头像
+	Email         string           `gorm:"size:128" json:"email"`                                                                        // 邮箱
+	Tel           string           `gorm:"size:18" json:"tel"`                                                                           // 手机号
+	Addr          string           `gorm:"size:64" json:"address"`                                                                       // 地址
+	Token         string           `gorm:"size:64" json:"token"`                                                                         // token 后续写到redis中，不写入这里了，原来是想做永久登录的
+	IP            string           `gorm:"size:64" json:"ip"`                                                                            // ip
+	Role          ctype.Role       `gorm:"size:4;default:1" json:"role"`                                                                 // 角色 1 管理员 2 普通用户 3 游客 4 被禁用
+	SignStatus    ctype.SignStatus `gorm:"type=smallint(6)" json:"sign_status"`                                                          // 注册来源 qq 邮箱 手机等
+	ArticleModel  []ArticleModel   `gorm:"foreignKey:UserID" json:"ArticleModels"`                                                       // 发布文章列表
+	CollectsModel []ArticleModel   `gorm:"many2many:user_collects;joinForeignKey:UserID;joinReferences:ArticleID" json:"CollectsModels"` // 收藏文章列表
 }

@@ -18,9 +18,9 @@ type ArticleModel struct {
 	Category     string         `gorm:"size:20" json:"category"`                    // 文章分类
 	Source       string         `json:"source"`                                     // 文章来源
 	Link         string         `json:"link"`                                       // 文章来源链接
-	Banner       ImageModel     `json:"banner" gorm:"foreignKey:BannerID"`          // 文章封面
-	BannerID     uint           `json:"banner_id"`                                  // 文章封面ID
+	Cover        ImageModel     `json:"cover"`                                      // 文章封面
+	CoverID      uint           `json:"cover_id"`                                   // 文章封面ID
 	NickName     string         `gorm:"size:42" json:"nick_name"`                   // 文章作者昵称
-	BannerPath   string         `json:"banner_path"`                                // 文章封面路径
+	CoverPath    string         `json:"cover_path"`                                 // 文章封面路径
 	Tags         ctype.Array    `gorm:"string;size:64" json:"tags"`                 // 文章标签
 }
