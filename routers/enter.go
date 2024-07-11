@@ -6,8 +6,9 @@ import (
 
 func InitRouter() *gin.Engine {
 	r := gin.Default()
+	settingGroup := r.Group("settings")
 	settingsRouter := SettingsRouter{
-		r,
+		settingGroup,
 	}
 	settingsRouter.SettingsRoute()
 	return r

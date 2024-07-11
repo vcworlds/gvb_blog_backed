@@ -6,10 +6,11 @@ import (
 )
 
 type SettingsRouter struct {
-	*gin.Engine
+	*gin.RouterGroup
 }
 
 func (r SettingsRouter) SettingsRoute() {
 	settingsApi := api.RouterApp{}
+	r.Group("")
 	r.GET("/", settingsApi.SettingsRouter.SettingsInfoView)
 }
