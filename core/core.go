@@ -5,7 +5,6 @@ import (
 	"gopkg.in/yaml.v3"
 	"gvb_blog/config"
 	"gvb_blog/global"
-	"log"
 	"os"
 )
 
@@ -17,14 +16,14 @@ func InitConfig() {
 	yamlConf, err := os.ReadFile(ConfigFilePath)
 
 	if err != nil {
-		fmt.Println("读取文件失败：", err)
+		global.Log.Fatalf("读取文件失败：", err)
 		return
 	}
 	err = yaml.Unmarshal(yamlConf, c)
 	if err != nil {
-		fmt.Println("解析 yaml 文件失败：", err)
+		global.Log.Fatalf("解析 yaml 文件失败：", err)
 		return
 	}
-	log.Print("config yaml load Init Success")
+	fmt.Println("config yaml load Init Success")
 	global.Config = c
 }

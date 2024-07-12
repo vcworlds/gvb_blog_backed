@@ -11,6 +11,5 @@ type SettingsRouter struct {
 
 func (r SettingsRouter) SettingsRoute() {
 	settingsApi := api.RouterApp{}
-	r.Group("")
-	r.GET("/", settingsApi.SettingsRouter.SettingsInfoView)
+	r.GET("/settingInfo", settingsApi.SettingsRouter.SettingsInfo)
 }

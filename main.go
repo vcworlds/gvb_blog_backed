@@ -24,5 +24,8 @@ func main() {
 	r := routers.InitRouter()
 	add := global.Config.System.Addr()
 	global.Log.Infof("您的程序运行在：%s", add)
-	r.Run(add)
+	err := r.Run(add)
+	if err != nil {
+		global.Log.Infof("程序运行失败", err)
+	}
 }
