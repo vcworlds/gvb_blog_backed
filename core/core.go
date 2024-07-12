@@ -5,7 +5,6 @@ import (
 	"gopkg.in/yaml.v3"
 	"gvb_blog/config"
 	"gvb_blog/global"
-	"log"
 	"os"
 )
 
@@ -22,9 +21,24 @@ func InitConfig() {
 	}
 	err = yaml.Unmarshal(yamlConf, c)
 	if err != nil {
-		fmt.Println("解析 yaml 文件失败：", err)
+		fmt.Println("解析yaml文件失败：", err)
 		return
 	}
-	log.Print("config yaml load Init Success")
+	fmt.Println("config yaml load Init Success")
 	global.Config = c
+}
+
+// 修改配置文件
+func SetYaml() error {
+	data, err := yaml.Marshal(global.Config)
+	if err != nil {
+		return err
+	}
+	err = os.WriteFile(ConfigFilePath, data, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	global.Log.Info("配置文件修改成功")
+	return nil
+
 }

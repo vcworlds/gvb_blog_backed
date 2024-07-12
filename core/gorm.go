@@ -6,18 +6,17 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gvb_blog/global"
-	"log"
 	"time"
 )
 
 func InitGorm() *gorm.DB {
 	if global.Config.Mysql.Host == "" {
-		log.Println("未配置数据库信息")
+		global.Log.Error("未配置数据库信息")
 		return nil
 	}
 	// 连接数据库
 	dsn := global.Config.Mysql.Dsn()
-	log.Println("查看数据库连接地址:", dsn)
+	global.Log.Info("查看数据库连接地址:", dsn)
 	var mysqlLogger logger.Interface
 	if global.Config.System.Env == "debug" {
 		// 开发环境显示的sql
@@ -31,7 +30,7 @@ func InitGorm() *gorm.DB {
 		Logger: mysqlLogger,
 	})
 	if err != nil {
-		log.Println(fmt.Sprintf("数据库连接失败: %s", err))
+		global.Log.Fatalf(fmt.Sprintf("数据库连接失败: %s", err))
 	}
 
 	sqlDB, err := db.DB()
