@@ -23,7 +23,7 @@ site_info:
     qq_qr_image: https://q1.qlogo.cn/g?b=qq&nk=123456&s=640
     qq_number: "2428537532"
     version: 1.0.0
-    email: 123456@qq.com
+    email: 2428537532@qq.com
     github: https://github.com/dashboard
     gitee: https://gitee.com/123456
     name: 张柏芝
@@ -31,3 +31,29 @@ site_info:
     address: 江苏徐州
     slogan: 人生如逆旅，我亦是行人
     slogan_en: Life is like a journey, I am also a walker
+qq:
+    app_id: 1103782715_appid
+    key: 1103782715_key
+    redirect: 重定向值
+email:
+    host: smtp.qq.com
+    port: 465
+    user: 1103782715@qq.com
+    password: "ahvvuoqmrmiyfjhj"
+    default_from_email: 手机千万不要放在外套口袋！！！
+    user_ssl: false
+    user_tls: false
+    authorization_code: "ahvvuoqmrmiyfjhj" # QQ邮箱 授权码
+jwt:
+    expires: 48 # hour
+    issuer: "gin_chat"
+    subject: "chat"
+    grant_scope: "chat,read user info"
+qi_niu:
+    enable: false
+    access_key: xxx
+    secret_key: xxx
+    bucket: xxx
+    cdn: xxx
+    zone: xxx
+    size: 5
