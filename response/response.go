@@ -37,7 +37,3 @@ func OkWithData(ctx *gin.Context, data any) {
 func Fail(ctx *gin.Context, msg string) {
 	Result(ctx, http.StatusUnprocessableEntity, 422, msg, map[string]any{})
 }
-
-func FailWithMessage(ctx *gin.Context, msg string) {
-	Result(ctx, http.StatusUnprocessableEntity, 422, msg, map[string]any{})
-}

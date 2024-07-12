@@ -16,12 +16,12 @@ func InitConfig() {
 	yamlConf, err := os.ReadFile(ConfigFilePath)
 
 	if err != nil {
-		global.Log.Fatalf("读取文件失败：", err)
+		fmt.Println("读取文件失败：", err)
 		return
 	}
 	err = yaml.Unmarshal(yamlConf, c)
 	if err != nil {
-		global.Log.Fatalf("解析 yaml 文件失败：", err)
+		fmt.Println("解析yaml文件失败：", err)
 		return
 	}
 	fmt.Println("config yaml load Init Success")
