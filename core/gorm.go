@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gvb_blog/global"
+	"gvb_blog/models"
 	"time"
 )
 
@@ -37,6 +38,7 @@ func InitGorm() *gorm.DB {
 	if err != nil {
 		panic(err)
 	}
+	db.AutoMigrate(&models.ArticleModel{})
 
 	sqlDB.SetMaxIdleConns(10)               // 设置连接池中的最大闲置连接数
 	sqlDB.SetMaxOpenConns(100)              // 设置连接池最大连接数
