@@ -23,6 +23,10 @@ func Ok(ctx *gin.Context, msg string, data any) {
 	Result(ctx, http.StatusOK, 200, msg, data)
 }
 
+func OkWith(ctx *gin.Context) {
+	Result(ctx, http.StatusOK, 200, "更改成功", nil)
+}
+
 func OkWithMessage(ctx *gin.Context, msg string) {
 	Result(ctx, http.StatusOK, 200, msg, map[string]any{})
 }

@@ -27,3 +27,18 @@ func InitConfig() {
 	fmt.Println("config yaml load Init Success")
 	global.Config = c
 }
+
+// 修改配置文件
+func SetYaml() error {
+	data, err := yaml.Marshal(global.Config)
+	if err != nil {
+		return err
+	}
+	err = os.WriteFile(ConfigFilePath, data, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	global.Log.Info("配置文件修改成功")
+	return nil
+
+}
