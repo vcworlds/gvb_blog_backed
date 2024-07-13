@@ -9,5 +9,7 @@ func InitRouter() *gin.Engine {
 	settingGroup := r.Group("settings")
 	settingRouter := SettingsRouter{settingGroup}
 	settingRouter.SettingsRoute()
+	imageRouter := ImageRouter{r}
+	imageRouter.ImageRouter()
 	return r
 }

@@ -7,6 +7,7 @@ type Config struct {
 	SiteInfo SiteInfo `yaml:"site_info"`
 	QQ       QQ       `canGet:"qq" yaml:"qq"`
 	Email    Email    `canGet:"email" yaml:"email"`
+	Uploads  Uploads  `yaml:"uploads"`
 	Jwt      Jwt      `canGet:"jwt" yaml:"jwt"`
 	QiNiu    QiNiu    `canGet:"qiNiu" yaml:"qi_niu"`
 }
