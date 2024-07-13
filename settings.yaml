@@ -32,7 +32,7 @@ site_info:
     name: 张柏芝
     job: 程序员
     address: 江苏徐州
-    slogan: 人生如逆旅，我亦是行人
+    slogan: The things we pursue throughout our lives are actually there from the beginning, it's just that we realize it later
     slogan_en: Life is like a journey, I am also a walker
 qq:
     app_id: 1103782715_appid
@@ -43,7 +43,7 @@ email:
     port: 306
     user: 1103782715@qq.com
     password: ahvvuoqmrmiyfjhj
-    default_from_email: 手机千万不要放在外套口袋！！！
+    default_from_email: 默认邮箱
     user_ssl: true
     user_tls: false
     authorization_code: ahvvuoqmrmiyfjhj

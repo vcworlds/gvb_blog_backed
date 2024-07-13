@@ -7,7 +7,16 @@ import (
 )
 
 var (
-	Config *config.Config
-	DB     *gorm.DB
-	Log    *logrus.Logger
+	Config         *config.Config
+	DB             *gorm.DB
+	Log            *logrus.Logger
+	WhiteImageList = []string{
+		"jpg",
+		"png",
+		"jpeg",
+		"ico",
+		"tiff",
+		"gif",
+		"svg",
+	}
 )

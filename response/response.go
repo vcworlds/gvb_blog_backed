@@ -26,6 +26,9 @@ func Ok(ctx *gin.Context, msg string, data any) {
 func OkWith(ctx *gin.Context) {
 	Result(ctx, http.StatusOK, 200, "更改成功", nil)
 }
+func OkWithPage(ctx *gin.Context, list any, count int) {
+	Result(ctx, http.StatusOK, 200, "获取成功", gin.H{"count": count, "list": list})
+}
 
 func OkWithMessage(ctx *gin.Context, msg string) {
 	Result(ctx, http.StatusOK, 200, msg, map[string]any{})
