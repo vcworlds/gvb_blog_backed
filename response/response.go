@@ -2,6 +2,7 @@ package response
 
 import (
 	"github.com/gin-gonic/gin"
+	"gvb_blog/utils"
 	"net/http"
 )
 
@@ -26,7 +27,7 @@ func Ok(ctx *gin.Context, msg string, data any) {
 func OkWith(ctx *gin.Context) {
 	Result(ctx, http.StatusOK, 200, "更改成功", nil)
 }
-func OkWithPage(ctx *gin.Context, list any, count int) {
+func OkWithPage(ctx *gin.Context, list any, count int64) {
 	Result(ctx, http.StatusOK, 200, "获取成功", gin.H{"count": count, "list": list})
 }
 
@@ -39,4 +40,9 @@ func OkWithData(ctx *gin.Context, data any) {
 }
 func Fail(ctx *gin.Context, msg string) {
 	Result(ctx, http.StatusUnprocessableEntity, 422, msg, map[string]any{})
+}
+
+func FailWithValidateError[T any](err error, obj *T, c *gin.Context) {
+	msg := utils.GetValidMsg(err, obj)
+	Fail(c, msg)
 }
