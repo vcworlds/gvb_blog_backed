@@ -12,5 +12,5 @@ type Page struct {
 	CurrentPage int    `form:"currentPage"` // 当前页
 	Limit       int    `form:"limit"`       // 一页显示多少条数据
 	Key         string `form:"key"`         // 搜索参数
-	Sort        int    `form:"sort"`
+	Sort        string `form:"sort"`        //排序
 }

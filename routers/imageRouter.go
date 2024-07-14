@@ -2,7 +2,7 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
-	"gvb_blog/api"
+	"gvb_blog/api/image_api"
 )
 
 type ImageRouter struct {
@@ -10,7 +10,8 @@ type ImageRouter struct {
 }
 
 func (r ImageRouter) ImageRouter() {
-	ImageApi := api.ApiRouterApp
-	r.POST("image", ImageApi.ImageRouter.ImageView)
-	r.GET("imageList", ImageApi.ImageRouter.ImageList)
+	ImageApi := image_api.NewImageApi()
+	r.POST("image", ImageApi.Create)
+	r.GET("imageList", ImageApi.Show)
+	r.DELETE("delete", ImageApi.Delete)
 }

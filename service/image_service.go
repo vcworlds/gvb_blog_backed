@@ -65,7 +65,7 @@ func ImageService(fileList []*multipart.FileHeader, ctx *gin.Context) []ImageRes
 		if err == nil {
 			resList = append(resList, ImageResponse{
 				IsSuccess: false,
-				Msg:       "该文件已存在",
+				Msg:       fmt.Sprintf("该文件已存在,存在id为%d", image.ID),
 				Name:      image.Path,
 			})
 			continue
