@@ -6,7 +6,7 @@ type FileLocationType int
 
 const (
 	Local FileLocationType = iota + 1 // 本地保存
-	QiNiu                             // 七牛保存
+	QiNiu FileLocationType = 2        // 七牛保存
 )
 
 func (s FileLocationType) MarshalJSON() ([]byte, error) {

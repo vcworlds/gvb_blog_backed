@@ -1,4 +1,4 @@
-package service
+package image_service
 
 import (
 	"fmt"
@@ -6,6 +6,8 @@ import (
 	"gvb_blog/dao"
 	"gvb_blog/global"
 	"gvb_blog/models"
+	"gvb_blog/models/ctype"
+	"gvb_blog/plugins/qiniu"
 	"gvb_blog/utils"
 	"io"
 	"mime/multipart"
@@ -67,6 +69,27 @@ func ImageService(fileList []*multipart.FileHeader, ctx *gin.Context) []ImageRes
 				IsSuccess: false,
 				Msg:       fmt.Sprintf("该文件已存在,存在id为%d", image.ID),
 				Name:      image.Path,
+			})
+			continue
+		} // 判断是否在七牛存储
+		if global.Config.QiNiu.Enable {
+			filePath, err := qiniu.UploadImage(fileData, "gvb", file.Filename)
+			if err != nil {
+				global.Log.Error(err)
+				continue
+			}
+			global.DB.Create(&models.ImageModel{
+				Path:   upPath,
+				Hash:   imageHash,
+				Name:   file.Filename,
+				Suffix: minSuffix,
+				Type:   ctype.FileLocationType(2).String(),
+			})
+			fmt.Println(ctype.FileLocationType(2).String())
+			resList = append(resList, ImageResponse{
+				IsSuccess: true,
+				Msg:       "上传七牛云成功",
+				Name:      filePath,
 			})
 			continue
 		}

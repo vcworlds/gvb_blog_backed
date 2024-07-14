@@ -53,10 +53,10 @@ jwt:
     grant_scope: chat,read user info
     subject: chat
 qi_niu:
-    enable: false
+    enable: true
     access_key: Z9f1VLVDia5PWNwOihr49l_XBE7YNMmnemskWv1A
     secret_key: ouuJwrcx_aWmjRsMH9jMqz_XjLEphpyGTvQXfBJS
     bucket: shiyiyue
     cdn: ""
-    zone: "华南-广东"
+    zone: z2
     size: 5

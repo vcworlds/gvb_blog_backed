@@ -7,7 +7,7 @@ import (
 	"gvb_blog/global"
 	"gvb_blog/models"
 	"gvb_blog/response"
-	"gvb_blog/service"
+	"gvb_blog/service/image_service"
 )
 
 type IImageApi interface {
@@ -33,7 +33,7 @@ func (ImageApi) Create(ctx *gin.Context) {
 		response.Fail(ctx, "文件参数获取失败")
 		return
 	}
-	resList := service.ImageService(fileList, ctx)
+	resList := image_service.ImageService(fileList, ctx)
 	response.OkWithData(ctx, resList)
 }
 

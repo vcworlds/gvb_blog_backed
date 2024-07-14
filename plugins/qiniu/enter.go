@@ -40,8 +40,8 @@ func getCfg(q config.QiNiu) storage.Config {
 }
 
 // 上传图片
-func UploadImage(data []byte, prefix string) (filePath string, err error) {
-	// 判断是否使用七牛
+func UploadImage(data []byte, prefix string, fileName string) (filePath string, err error) {
+	// 判断是否使用七牛云
 	if !global.Config.QiNiu.Enable {
 		return "", errors.New("您没有使用七牛")
 	}
@@ -63,7 +63,7 @@ func UploadImage(data []byte, prefix string) (filePath string, err error) {
 	dataLen := int64(len(data))
 	// 获取当前时间
 	now := time.Now().Format("20060102150405")
-	key := fmt.Sprintf("%s/%s.png", prefix, now)
+	key := fmt.Sprintf("%s/%s__%s", prefix, now, fileName)
 
 	err = formUploader.Put(context.Background(), &ret, upToken, key, bytes.NewReader(data), dataLen, &putExtra)
 	if err != nil {
