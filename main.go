@@ -2,11 +2,17 @@ package main
 
 import (
 	"gvb_blog/core"
+	_ "gvb_blog/docs"
 	"gvb_blog/flag"
 	"gvb_blog/global"
 	"gvb_blog/routers"
 )
 
+// @title           gvb_API
+// @version         1.0
+// @description     API 文档
+// @host     127.0.0.1：8080
+// @BasePath  /
 func main() {
 	// 读取配置文件
 	core.InitConfig()
@@ -20,6 +26,13 @@ func main() {
 		flag.SwitchOption(&option)
 		return
 	}
+	//// 自动执行swag文件
+	//cmd := exec.Command("swag", "init")
+	//err := cmd.Run()
+	//if err != nil {
+	//	panic(err)
+	//}
+
 	// 路由配置
 	r := routers.InitRouter()
 	add := global.Config.System.Addr()

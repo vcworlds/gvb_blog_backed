@@ -20,6 +20,11 @@ type ImageResponse struct {
 	IsSuccess bool   `json:"isSuccess"`
 	Msg       string `json:"msg"`
 }
+type ImageListRes struct {
+	Id   uint   `json:"id"`
+	Name string `json:"name"`
+	Path string `json:"path"`
+}
 
 func ImageService(fileList []*multipart.FileHeader, ctx *gin.Context) []ImageResponse {
 	// 不存在就创建
@@ -79,11 +84,11 @@ func ImageService(fileList []*multipart.FileHeader, ctx *gin.Context) []ImageRes
 				continue
 			}
 			global.DB.Create(&models.ImageModel{
-				Path:   upPath,
-				Hash:   imageHash,
-				Name:   file.Filename,
-				Suffix: minSuffix,
-				Type:   ctype.FileLocationType(2).String(),
+				Path:         upPath,
+				Hash:         imageHash,
+				Name:         file.Filename,
+				Suffix:       minSuffix,
+				FileLocation: 2,
 			})
 			fmt.Println(ctype.FileLocationType(2).String())
 			resList = append(resList, ImageResponse{

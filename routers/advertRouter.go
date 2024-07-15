@@ -10,7 +10,7 @@ type AdvertRouter struct {
 }
 
 func (r AdvertRouter) AdvertRouter() {
-	var ar advert_api.AdvertApi
+	ar := advert_api.NewAdvertApi()
 	r.POST("create", ar.Create)
 	r.DELETE("delete", ar.Delete)
 	r.PUT("update/:id", ar.Update)

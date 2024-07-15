@@ -21,6 +21,13 @@ func NewImageApi() IImageApi {
 }
 
 // Create 添加图片
+// @Tags 图片管理
+// @Summary 添加图片
+// @Description 添加图片
+// @Param data query models.Page true "添加图片所需参数"
+// @Produce json
+// @Router /image [post]
+// @Success 200 {object} response.Response{data=string}
 func (ImageApi) Create(ctx *gin.Context) {
 	fileForm, err := ctx.MultipartForm()
 	if err != nil {
@@ -38,6 +45,13 @@ func (ImageApi) Create(ctx *gin.Context) {
 }
 
 // Show 获取图片
+// @Tags 图片管理
+// @Summary 获取图片列表
+// @Description 获取图片列表
+// @Param data query models.Page true "获取图片列表的分页参数"
+// @Produce json
+// @Router /imageList [get]
+// @Success 200 {object} response.Response{data=string}
 func (ImageApi) Show(ctx *gin.Context) {
 	var imagePage models.Page
 	err := ctx.ShouldBindQuery(&imagePage)
@@ -45,15 +59,27 @@ func (ImageApi) Show(ctx *gin.Context) {
 		response.Fail(ctx, "分页数据绑定失败")
 		return
 	}
-	list, count, err := common.CommonPage(models.ImageModel{}, common.Option{imagePage})
+	list, count, err := common.CommonPage[models.ImageModel](models.ImageModel{}, common.Option{imagePage})
 	if err != nil {
 		response.Fail(ctx, "获取分页数据失败")
 		return
+	}
+	fmt.Println(list)
+	for key, l := range list {
+		global.Log.Infof("字段名称为:", key)
+		global.Log.Infof("值为:", l)
 	}
 	response.OkWithData(ctx, gin.H{"count": count, "imageList": list})
 }
 
 // Delete 删除图片
+// @Tags 图片管理
+// @Summary 批量删除
+// @Description 批量删除
+// @Param data query models.Page true "批量删除列表的参数"
+// @Produce json
+// @Router /imageList [delete]
+// @Success 200 {object} response.Response{data=string}
 func (a ImageApi) Delete(ctx *gin.Context) {
 	var ids common.RemoveFileList
 	err := ctx.ShouldBindJSON(&ids)
@@ -72,6 +98,13 @@ func (a ImageApi) Delete(ctx *gin.Context) {
 }
 
 // Update 更新
+// @Tags 图片管理
+// @Summary 更新图片
+// @Description 获取广告列表
+// @Param data query string true "更新"
+// @Produce json
+// @Router /advert/show [put]
+// @Success 200 {object} response.Response{data=string}
 func (a ImageApi) Update(ctx *gin.Context) {
 	//TODO implement me
 	panic("implement me")

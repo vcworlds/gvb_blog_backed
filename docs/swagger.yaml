@@ -1,0 +1,338 @@
+basePath: /
+definitions:
+  common.RemoveFileList:
+    properties:
+      ids:
+        items:
+          type: integer
+        type: array
+    required:
+    - ids
+    type: object
+  response.Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      msg:
+        type: string
+    type: object
+  service.AdvertResponse:
+    properties:
+      href:
+        description: 广告链接
+        type: string
+      images:
+        description: 图片
+        type: string
+      is_show:
+        description: 是否显示
+        type: boolean
+      title:
+        description: 广告标题 唯一
+        type: string
+    required:
+    - href
+    - images
+    - is_show
+    - title
+    type: object
+  service.ImageSortList:
+    properties:
+      imageId:
+        type: integer
+      sort:
+        type: integer
+    type: object
+  service.MenuService:
+    properties:
+      abstract:
+        description: 简介
+        items:
+          type: string
+        type: array
+      abstractTime:
+        description: 简介切换时间
+        type: integer
+      imageSort:
+        description: 图片排序顺序
+        items:
+          $ref: '#/definitions/service.ImageSortList'
+        type: array
+      menuTime:
+        description: 切换时间
+        type: integer
+      menuTitle:
+        description: 中文 =>导航条显示
+        type: string
+      menuTitleEn:
+        description: 英文=>路径显示
+        type: string
+      slogan:
+        type: string
+      sort:
+        description: 菜单序号
+        type: integer
+    required:
+    - menuTitle
+    - menuTitleEn
+    - sort
+    type: object
+host: 127.0.0.1：8080
+info:
+  contact: {}
+  description: API 文档
+  title: gvb_API
+  version: "1.0"
+paths:
+  /advert/create:
+    post:
+      description: 创建广告
+      parameters:
+      - description: 广告的参数
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/service.AdvertResponse'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 创建广告
+      tags:
+      - 广告管理
+  /advert/delete:
+    delete:
+      description: 删除广告
+      parameters:
+      - description: 删除广告所需参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/common.RemoveFileList'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: 删除广告
+      tags:
+      - 广告管理
+  /advert/show:
+    get:
+      description: 获取广告列表
+      parameters:
+      - description: 当前页
+        in: query
+        name: currentPage
+        type: integer
+      - description: 搜索参数
+        in: query
+        name: key
+        type: string
+      - description: 一页显示多少条数据
+        in: query
+        name: limit
+        type: integer
+      - description: 排序
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: 获取广告列表
+      tags:
+      - 广告管理
+    put:
+      description: 获取广告列表
+      parameters:
+      - description: 更新
+        in: query
+        name: data
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: 更新图片
+      tags:
+      - 图片管理
+  /advert/update/:id:
+    put:
+      description: 编辑广告
+      parameters:
+      - description: 编辑广告所需参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/service.AdvertResponse'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: 编辑广告
+      tags:
+      - 广告管理
+  /image:
+    post:
+      description: 添加图片
+      parameters:
+      - description: 当前页
+        in: query
+        name: currentPage
+        type: integer
+      - description: 搜索参数
+        in: query
+        name: key
+        type: string
+      - description: 一页显示多少条数据
+        in: query
+        name: limit
+        type: integer
+      - description: 排序
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: 添加图片
+      tags:
+      - 图片管理
+  /imageList:
+    delete:
+      description: 批量删除
+      parameters:
+      - description: 当前页
+        in: query
+        name: currentPage
+        type: integer
+      - description: 搜索参数
+        in: query
+        name: key
+        type: string
+      - description: 一页显示多少条数据
+        in: query
+        name: limit
+        type: integer
+      - description: 排序
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: 批量删除
+      tags:
+      - 图片管理
+    get:
+      description: 获取图片列表
+      parameters:
+      - description: 当前页
+        in: query
+        name: currentPage
+        type: integer
+      - description: 搜索参数
+        in: query
+        name: key
+        type: string
+      - description: 一页显示多少条数据
+        in: query
+        name: limit
+        type: integer
+      - description: 排序
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: 获取图片列表
+      tags:
+      - 图片管理
+  /menu/create:
+    post:
+      description: 创建菜单
+      parameters:
+      - description: 菜单的参数
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/service.MenuService'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 创建菜单
+      tags:
+      - 菜单管理
+swagger: "2.0"

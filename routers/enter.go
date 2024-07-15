@@ -2,10 +2,13 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func InitRouter() *gin.Engine {
 	r := gin.Default()
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	settingGroup := r.Group("settings")
 	// 系统配置
 	settingRouter := SettingsRouter{settingGroup}
@@ -17,5 +20,10 @@ func InitRouter() *gin.Engine {
 	aGroup := r.Group("advert")
 	advertRouter := AdvertRouter{aGroup}
 	advertRouter.AdvertRouter()
+
+	// 菜单管理
+	mGroup := r.Group("menu")
+	menuRouter := MenuRouter{mGroup}
+	menuRouter.MenuRouter()
 	return r
 }

@@ -11,6 +11,14 @@ import (
 	"strings"
 )
 
+// Create
+// @Tags 广告管理
+// @Summary 创建广告
+// @Description 创建广告
+// @Param data body service.AdvertResponse false "广告的参数"
+// @Produce json
+// @Router /advert/create  [post]
+// @Success 200 {object} response.Response
 func (a AdvertApi) Create(ctx *gin.Context) {
 	var ar service.AdvertResponse
 	err := ctx.ShouldBindJSON(&ar)
@@ -26,6 +34,14 @@ func (a AdvertApi) Create(ctx *gin.Context) {
 	response.OkWithMessage(ctx, res.Msg)
 }
 
+// Delete
+// @Tags 广告管理
+// @Summary 删除广告
+// @Description 删除广告
+// @Param data body  common.RemoveFileList true "删除广告所需参数"
+// @Produce json
+// @Router /advert/delete  [delete]
+// @Success 200 {object} response.Response{data=string}
 func (a AdvertApi) Delete(ctx *gin.Context) {
 	var ids common.RemoveFileList
 	err := ctx.ShouldBindJSON(&ids)
@@ -47,6 +63,14 @@ func (a AdvertApi) Delete(ctx *gin.Context) {
 	response.OkWithMessage(ctx, fmt.Sprintf("删除成功,共删除了%d条数据", count))
 }
 
+// Update
+// @Tags 广告管理
+// @Summary 编辑广告
+// @Description 编辑广告
+// @Param data body service.AdvertResponse true "编辑广告所需参数"
+// @Produce json
+// @Router /advert/update/:id  [put]
+// @Success 200 {object} response.Response{data=string}
 func (a AdvertApi) Update(ctx *gin.Context) {
 	id := ctx.Param("id")
 	// 判断id是否存在
@@ -73,6 +97,14 @@ func (a AdvertApi) Update(ctx *gin.Context) {
 	})
 }
 
+// Show
+// @Tags 广告管理
+// @Summary 获取广告列表
+// @Description 获取广告列表
+// @Param data query models.Page true "获取广告列表的分页参数"
+// @Produce json
+// @Router /advert/show [get]
+// @Success 200 {object} response.Response{data=string}
 func (a AdvertApi) Show(ctx *gin.Context) {
 	var advertPage models.Page
 	err := ctx.ShouldBindQuery(&advertPage)
