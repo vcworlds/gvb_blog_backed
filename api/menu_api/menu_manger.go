@@ -1,22 +1,14 @@
 package menu_api
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"gvb_blog/common"
 	"gvb_blog/global"
 	"gvb_blog/models"
 	"gvb_blog/response"
 	"gvb_blog/service"
 )
-
-type Image struct {
-	Id   uint   `json:"id"`
-	Path string `json:"path"`
-}
-
-type MenuResponse struct {
-	models.MenuModel
-	Banners []Image `json:"banners"`
-}
 
 // Create
 // @Tags 菜单管理
@@ -35,9 +27,9 @@ func (m MenuApi) Create(ctx *gin.Context) {
 	}
 	// 创建表
 	menuModel := &models.MenuModel{
-		MenuTitle:    menuService.MenuTitle,
-		MenuTitleEn:  menuService.MenuTitleEn,
-		Slogan:       menuService.MenuTitle,
+		Title:        menuService.Title,
+		Path:         menuService.Path,
+		Slogan:       menuService.Slogan,
 		Abstract:     menuService.Abstract,
 		AbstractTime: menuService.AbstractTime,
 		MenuTime:     menuService.MenuTime,
@@ -70,9 +62,37 @@ func (m MenuApi) Create(ctx *gin.Context) {
 	response.OkWithMessage(ctx, "创建成功")
 }
 
+// Create
+// @Tags 菜单管理
+// @Summary 创建菜单
+// @Description 创建菜单
+// @Param data body service.MenuService false "菜单的参数"
+// @Produce json
+// @Router /menu/create  [post]
+// @Success 200 {object} response.Response
+// @Success 200 {object} response.Response
 func (m MenuApi) Delete(ctx *gin.Context) {
-	//TODO implement me
-	panic("implement me")
+	var ids common.RemoveFileList
+	err := ctx.ShouldBindJSON(&ids)
+	if err != nil {
+		response.FailWithValidateError(err, &ids.Ids, ctx)
+		return
+	}
+	var menus []models.MenuModel
+	count := global.DB.Find(&menus, "id in ?", ids.Ids).RowsAffected
+	if count == 0 {
+		response.OkWithMessage(ctx, "没找到相关数据")
+		return
+	}
+	// 将对应的其他的模型清空
+	err = global.DB.Model(&menus).Association("MenuImages").Clear()
+	if err != nil {
+		global.Log.Error(err)
+		response.Fail(ctx, "删除关联表失败")
+		return
+	}
+	deleteR := global.DB.Delete(&menus).RowsAffected
+	response.OkWithMessage(ctx, fmt.Sprintf("共删除了了%d数据", deleteR))
 }
 
 func (m MenuApi) Update(ctx *gin.Context) {
@@ -89,34 +109,40 @@ func (m MenuApi) Update(ctx *gin.Context) {
 // @Router /menu/create  [post]
 // @Success 200 {object} response.Response
 func (m MenuApi) Show(ctx *gin.Context) {
-	// 获取所有菜单中id
+	// 获取所有的菜单id
 	var menuList []models.MenuModel
-	var menuId []uint
-	global.DB.Find(&menuList).Select("id").Order("sort desc").Scan(&menuId)
+	var menuIds []uint
+	global.DB.Order("sort desc").Find(&menuList).Select("id").Order("sort desc").Scan(&menuIds)
+	// 跟据菜单id查询关联的图片
 	var menuImage []models.MenuImageModel
-	// 根据菜单id查找都里面所关联的图片
-	global.DB.Preload("ImageModel").Order("sort desc").Find(&menuImage, "image_id in ?", menuId)
-	// 返回数据
-	var menus []MenuResponse
-	// 循环获取每一个菜单
-	for _, model := range menuList {
-		// images
-		var images []Image
+	global.DB.Preload("ImageModel").Order("sort desc").Find(&menuImage, "menu_id in ?", menuIds)
+	var menuRes []service.MenuResponse
+	// 循环每一个菜单
+	for _, menu := range menuList {
+		var images []service.Image
+		// 循环关联表拿到每一个菜单所对应的图片
 		for _, image := range menuImage {
-			if image.MenuID != model.ID {
+			// 如果菜单id和关联表的菜单id不一样则退出循环
+			if menu.ID != image.MenuID {
 				continue
 			}
-			images = append(images, Image{
+			// 相同的话添加进去图片
+			images = append(images, service.Image{
 				Id:   image.ImageID,
 				Path: image.ImageModel.Path,
 			})
-			menus = append(menus, MenuResponse{
-				MenuModel: model,
-				Banners:   images,
-			})
 		}
-		response.OkWithData(ctx, menus)
-		return
+		menuRes = append(menuRes, service.MenuResponse{
+			MenuModel: menu,
+			Image:     images,
+		})
 	}
+	response.OkWithData(ctx, menuRes)
 
+}
+
+func MenuInfo(ctx *gin.Context) {
+	var menuInfo []service.MenuInfo
+	global.DB.Model(models.MenuModel{}).Select("id", "path", "title").Scan(&menuInfo)
+	response.OkWithData(ctx, menuInfo)
 }

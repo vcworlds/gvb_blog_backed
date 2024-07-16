@@ -15,4 +15,5 @@ func (m MenuRouter) MenuRouter() {
 	m.PUT("update", menuApi.Update)
 	m.DELETE("delete", menuApi.Delete)
 	m.GET("show", menuApi.Show)
+	m.GET("menuInfo", menu_api.MenuInfo)
 }

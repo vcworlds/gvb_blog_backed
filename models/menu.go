@@ -9,8 +9,7 @@ type ImageSort struct {
 
 type MenuModel struct {
 	MODEL
-	MenuTitle    string       `gorm:"size:32" json:"menu_title"`
-	MenuTitleEn  string       `gorm:"size:32" json:"menu_title_en"`
+	Title        string       `gorm:"size:32" json:"title"`
 	Icon         string       `gorm:"size:32" json:"icon"`             // 图标名称（前端的图标库名称）
 	Path         string       `gorm:"size:32 default:'/'" json:"path"` // 菜单路径
 	Slogan       string       `gorm:"size:64" json:"slogan"`
