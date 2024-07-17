@@ -41,9 +41,9 @@ func SwitchOption(option *Option) {
 		MakeMigration()
 		return
 	}
+
 	//fmt.Println("创建用户", option.User, option.User == "")
 	if option.User == "admin" || option.User == "user" {
-		// 创建用户
 		CreateUser(option.User)
 		return
 	}

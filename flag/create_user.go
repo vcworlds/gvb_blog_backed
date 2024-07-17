@@ -8,60 +8,49 @@ import (
 	"gvb_blog/utils"
 )
 
-func CreateUser(role string) {
-	//	 创建用户
+var (
+	userName   string
+	nickName   string
+	Password   string
+	RePassword string
+)
 
-	var (
-		userName   string
-		nickName   string
-		password   string
-		rePassword string
-		email      string
-	)
-	fmt.Println("请输入用户名:")
+func CreateUser(permissions string) {
+	fmt.Println("请输入用户名：")
 	fmt.Scan(&userName)
 	fmt.Println("请输入昵称:")
 	fmt.Scan(&nickName)
-	for {
-		fmt.Println("请输入密码:")
-		fmt.Scan(&password)
-		fmt.Println("请再次输入密码:")
-		fmt.Scan(&rePassword)
-		if password == rePassword {
-			break
-		}
-		fmt.Println("两次密码不一致")
-	}
-	fmt.Println("请输入邮箱:")
-	fmt.Scan(&email)
-
+	fmt.Println("请输入密码:")
+	fmt.Scan(&Password)
+	fmt.Println("请确认密码:")
+	fmt.Scan(&RePassword)
 	var userModel models.UserModel
-	if global.DB.Take(&userModel, "email = ?", email).Error == nil {
-		//	用户已存在
-		fmt.Println("用户已存在")
+	err := global.DB.Take(&userModel, "user_name = ?", userName).Error
+	if err == nil {
+		global.Log.Error("该用户已存在;请重新输入")
 		return
 	}
-
-	salt := utils.GenerateSalt(12) // 生成盐
-	passwordMD5 := utils.EncryptPassword(password, salt)
-	userModel = models.UserModel{
-		UserName:   userName,
-		Password:   passwordMD5,
+	if Password != RePassword {
+		global.Log.Error("密码不正确;请重新输入")
+		return
+	}
+	// 对密码进行加密
+	hashPwd := utils.PasswordMd5(Password)
+	// 判断角色
+	role := ctype.PermissionUser
+	if permissions == "admin" {
+		role = ctype.PermissionAdmin
+	}
+	// 入库
+	global.DB.Create(&models.UserModel{
+		MODEL:      models.MODEL{},
 		NickName:   nickName,
-		Email:      email,
-		Salt:       salt,
-		SignStatus: ctype.SignEmail,
-		Addr:       "内网注册地址",
+		UserName:   userName,
+		Password:   hashPwd,
+		AvatarId:   1,
+		Addr:       "内网注册",
 		IP:         "127.0.0.1",
-		Avatar:     "/static/avatar/avatar1.png", // 默认头像
-	}
-	if role == "admin" {
-		userModel.Role = ctype.PermissionAdmin
-	} else {
-		userModel.Role = ctype.PermissionUser
-	}
-	if global.DB.Create(&userModel).Error != nil {
-		fmt.Println("创建用户失败")
-	}
-	global.Log.Infof(fmt.Sprintf("创建用户成功,用户名:%s,密码:%s", userName, password))
+		Role:       role,
+		SignStatus: ctype.SignEmail,
+	})
 }

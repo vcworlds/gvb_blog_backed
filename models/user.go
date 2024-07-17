@@ -5,11 +5,12 @@ import "gvb_blog/models/ctype"
 // UserModel 用户表
 type UserModel struct {
 	MODEL
-	NickName      string           `gorm:"size:42" json:"nick_name"`                                                                            // 昵称
-	UserName      string           `gorm:"size:36" json:"user_name"`                                                                            // 用户名
-	Password      string           `gorm:"size:128" json:"password"`                                                                            // 密码
-	Salt          string           `json:"salt"`                                                                                                // 密码盐
-	Avatar        string           `gorm:"size:26" json:"avatar"`                                                                               // 头像
+	NickName      string           `gorm:"size:42" json:"nick_name"` // 昵称
+	UserName      string           `gorm:"size:36" json:"user_name"` // 用户名
+	Password      string           `gorm:"size:128" json:"password"` // 密码
+	Salt          string           `json:"salt"`                     // 密码盐
+	Avatar        Avatar           `gorm:"size:26" json:"avatar"`    // 头像
+	AvatarId      uint             `json:"avatarId"`
 	Email         string           `gorm:"size:128" json:"email"`                                                                               // 邮箱
 	Tel           string           `gorm:"size:18" json:"tel"`                                                                                  // 手机号
 	Addr          string           `gorm:"size:64" json:"address"`                                                                              // 地址
