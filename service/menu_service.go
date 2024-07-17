@@ -11,7 +11,7 @@ type ImageSortList struct {
 }
 
 type MenuService struct {
-	Title        string          `json:"Title" binding:"required" msg:"完善标题"`     // 中文 =>导航条显示
+	Title        string          `json:"Title" binding:"required" msg:"完善标题" `    // 中文 =>导航条显示
 	Path         string          `json:"Path" binding:"required" msg:"完善标题的英文名称"` //英文=>路径显示
 	Slogan       string          `json:"slogan"`                                  //
 	Abstract     ctype.Array     `json:"abstract"`                                //简介

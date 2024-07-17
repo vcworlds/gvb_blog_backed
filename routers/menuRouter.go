@@ -12,8 +12,9 @@ type MenuRouter struct {
 func (m MenuRouter) MenuRouter() {
 	menuApi := menu_api.NewMenuApi()
 	m.POST("create", menuApi.Create)
-	m.PUT("update", menuApi.Update)
+	m.PUT("update/:id", menuApi.Update)
 	m.DELETE("delete", menuApi.Delete)
 	m.GET("show", menuApi.Show)
 	m.GET("menuInfo", menu_api.MenuInfo)
+	m.GET("menuDetail/:id", menu_api.MenuDetail)
 }

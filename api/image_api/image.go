@@ -64,11 +64,6 @@ func (ImageApi) Show(ctx *gin.Context) {
 		response.Fail(ctx, "获取分页数据失败")
 		return
 	}
-	fmt.Println(list)
-	for key, l := range list {
-		global.Log.Infof("字段名称为:", key)
-		global.Log.Infof("值为:", l)
-	}
 	response.OkWithData(ctx, gin.H{"count": count, "imageList": list})
 }
 

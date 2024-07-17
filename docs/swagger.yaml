@@ -46,6 +46,12 @@ definitions:
     type: object
   service.MenuService:
     properties:
+      Path:
+        description: 英文=>路径显示
+        type: string
+      Title:
+        description: 中文 =>导航条显示
+        type: string
       abstract:
         description: 简介
         items:
@@ -62,20 +68,14 @@ definitions:
       menuTime:
         description: 切换时间
         type: integer
-      menuTitle:
-        description: 中文 =>导航条显示
-        type: string
-      menuTitleEn:
-        description: 英文=>路径显示
-        type: string
       slogan:
         type: string
       sort:
         description: 菜单序号
         type: integer
     required:
-    - menuTitle
-    - menuTitleEn
+    - Path
+    - Title
     - sort
     type: object
 host: 127.0.0.1：8080
@@ -333,6 +333,82 @@ paths:
           schema:
             $ref: '#/definitions/response.Response'
       summary: 创建菜单
+      tags:
+      - 菜单管理
+  /menu/delete:
+    delete:
+      description: 批量删除菜单
+      parameters:
+      - description: 删除菜单的参数
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/common.RemoveFileList'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 批量删除菜单
+      tags:
+      - 菜单管理
+  /menu/menuInfo:
+    get:
+      description: 获取图片的基础信息
+      parameters:
+      - description: 获取图片的基础信息id【不需要参数】
+        in: body
+        name: data
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 获取图片的基础信息id，path，title
+      tags:
+      - 菜单管理
+  /menu/show:
+    get:
+      description: 获取所有图片
+      parameters:
+      - description: 获取所有图片【不需要参数】
+        in: body
+        name: data
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 获取所有图片
+      tags:
+      - 菜单管理
+  /menu/update:
+    put:
+      description: 编辑菜单
+      parameters:
+      - description: 菜单的参数
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/service.MenuService'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 编辑菜单
       tags:
       - 菜单管理
 swagger: "2.0"

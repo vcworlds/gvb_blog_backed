@@ -423,6 +423,126 @@
                     }
                 }
             }
+        },
+        "/menu/delete": {
+            "delete": {
+                "description": "批量删除菜单",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "菜单管理"
+                ],
+                "summary": "批量删除菜单",
+                "parameters": [
+                    {
+                        "description": "删除菜单的参数",
+                        "name": "data",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/common.RemoveFileList"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/menu/menuInfo": {
+            "get": {
+                "description": "获取图片的基础信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "菜单管理"
+                ],
+                "summary": "获取图片的基础信息id，path，title",
+                "parameters": [
+                    {
+                        "description": "获取图片的基础信息id【不需要参数】",
+                        "name": "data",
+                        "in": "body",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/menu/show": {
+            "get": {
+                "description": "获取所有图片",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "菜单管理"
+                ],
+                "summary": "获取所有图片",
+                "parameters": [
+                    {
+                        "description": "获取所有图片【不需要参数】",
+                        "name": "data",
+                        "in": "body",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/menu/update": {
+            "put": {
+                "description": "编辑菜单",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "菜单管理"
+                ],
+                "summary": "编辑菜单",
+                "parameters": [
+                    {
+                        "description": "菜单的参数",
+                        "name": "data",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/service.MenuService"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -493,11 +613,19 @@
         "service.MenuService": {
             "type": "object",
             "required": [
-                "menuTitle",
-                "menuTitleEn",
+                "Path",
+                "Title",
                 "sort"
             ],
             "properties": {
+                "Path": {
+                    "description": "英文=\u003e路径显示",
+                    "type": "string"
+                },
+                "Title": {
+                    "description": "中文 =\u003e导航条显示",
+                    "type": "string"
+                },
                 "abstract": {
                     "description": "简介",
                     "type": "array",
@@ -519,14 +647,6 @@
                 "menuTime": {
                     "description": "切换时间",
                     "type": "integer"
-                },
-                "menuTitle": {
-                    "description": "中文 =\u003e导航条显示",
-                    "type": "string"
-                },
-                "menuTitleEn": {
-                    "description": "英文=\u003e路径显示",
-                    "type": "string"
                 },
                 "slogan": {
                     "type": "string"
