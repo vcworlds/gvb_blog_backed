@@ -10,7 +10,7 @@ type UserModel struct {
 	Password      string           `gorm:"size:128" json:"password"` // 密码
 	Salt          string           `json:"salt"`                     // 密码盐
 	Avatar        Avatar           `gorm:"size:26" json:"avatar"`    // 头像
-	AvatarId      uint             `json:"avatarId"`
+	AvatarId      uint             `json:"avatar_id"`
 	Email         string           `gorm:"size:128" json:"email"`                                                                               // 邮箱
 	Tel           string           `gorm:"size:18" json:"tel"`                                                                                  // 手机号
 	Addr          string           `gorm:"size:64" json:"address"`                                                                              // 地址

@@ -11,6 +11,6 @@ type SettingsRouter struct {
 
 func (r SettingsRouter) SettingsRoute() {
 	settingsApi := api.ApiRouterApp
-	r.GET("/settingInfo/:name", settingsApi.SettingsRouter.SettingsSiteInfo)
-	r.PUT("/updateSetting/:name", settingsApi.SettingsRouter.SettingsSiteInfoUpdate)
+	r.GET("/settingInfo/:name", settingsApi.SettingsApi.SettingsSiteInfo)
+	r.PUT("/updateSetting/:name", settingsApi.SettingsApi.SettingsSiteInfoUpdate)
 }

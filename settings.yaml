@@ -50,6 +50,7 @@ email:
 jwt:
     expires: 48
     issuer: gin_chat
+    jwt_key: asdfghjkl
     grant_scope: chat,read user info
     subject: chat
 qi_niu:
