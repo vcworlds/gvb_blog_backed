@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-var jwtKey = global.Config.Jwt.JwtKey
+var jwtKey = []byte("asdfghjkl")
 
 type Claims struct {
 	UserId   uint       `json:"user_id"`

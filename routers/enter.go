@@ -25,5 +25,9 @@ func InitRouter() *gin.Engine {
 	mGroup := r.Group("menu")
 	menuRouter := MenuRouter{mGroup}
 	menuRouter.MenuRouter()
+	// 用户管理
+	uGroup := r.Group("user")
+	userRouter := UserGroup{uGroup}
+	userRouter.UserRouter()
 	return r
 }
