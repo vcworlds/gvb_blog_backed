@@ -1,8 +1,10 @@
 package user_api
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"gvb_blog/common"
+	"gvb_blog/dao"
 	"gvb_blog/global"
 	"gvb_blog/models"
 	"gvb_blog/models/ctype"
@@ -27,7 +29,9 @@ func (UserApi) Login(ctx *gin.Context) {
 		return
 	}
 	// 判断密码是否正确
-	if !utils.ValidPassword(userRes.Password, "PasswordSalt", userMo.Password) {
+	exits, err := dao.IsPassword(userRes.Password, userMo.ID)
+	if !exits || err != nil {
+		global.Log.Error(err)
 		response.Fail(ctx, "您的密码输入有误")
 		return
 	}
@@ -52,6 +56,7 @@ func (UserApi) Register(ctx *gin.Context) {
 	// 判断用户名是否已经注册
 	var userMo models.UserModel
 	err = global.DB.Take(&userMo, "user_name = ?", registerRes.UserName).Error
+	fmt.Println(registerRes.Salt)
 	if err == nil {
 		response.Fail(ctx, "该用户已存在")
 		return
@@ -62,7 +67,7 @@ func (UserApi) Register(ctx *gin.Context) {
 		return
 	}
 	if registerRes.Salt == "" {
-		registerRes.Salt = "PasswordSalt"
+		registerRes.Salt = userMo.Salt
 	}
 	hashPassword := utils.EncryptPassword(registerRes.Password, registerRes.Salt)
 	global.DB.Create(&models.UserModel{
@@ -79,7 +84,7 @@ func (UserApi) Register(ctx *gin.Context) {
 	response.OkWithMessage(ctx, "注册成功")
 }
 
-func (u UserApi) UserList(ctx *gin.Context) {
+func (UserApi) UserList(ctx *gin.Context) {
 	var page models.Page
 	err := ctx.ShouldBindQuery(&page)
 	if err != nil {
@@ -109,6 +114,62 @@ func (u UserApi) UserList(ctx *gin.Context) {
 
 }
 
-func (u UserApi) RoleUpdate(ctx *gin.Context) {
+func (UserApi) RoleUpdate(ctx *gin.Context) {
+	var RoleRes user_service.RoleUpdateRep
+	err := ctx.ShouldBindJSON(&RoleRes)
+	if err != nil {
+		global.Log.Error(err)
+		response.FailWithValidateError(err, &RoleRes, ctx)
+		return
+	}
+	var userMo models.UserModel
+	err = global.DB.Take(&userMo, RoleRes.UserId).Error
+	if err != nil {
+		global.Log.Error(err)
+		response.Fail(ctx, "查询用户失败")
+		return
+	}
+	err = global.DB.Model(&userMo).Update("role", RoleRes.Role).Error
+	if err != nil {
+		global.Log.Error(err)
+		response.Fail(ctx, "更新用户权限失败")
+		return
+	}
+	response.OkWithMessage(ctx, "更新成功")
+}
 
+// PasswordUpdate 用户修改密码
+func (UserApi) PasswordUpdate(ctx *gin.Context) {
+	var PasswordRep user_service.PasswordUpdateRep
+	err := ctx.ShouldBindJSON(&PasswordRep)
+	if err != nil {
+		global.Log.Error(err)
+		response.FailWithValidateError(err, &PasswordRep, ctx)
+		return
+	}
+	_claims, exit := ctx.Get("claims")
+	if !exit {
+		response.Fail(ctx, "token有误")
+		return
+	}
+	claims := _claims.(*jwt.Claims)
+	var userMo models.UserModel
+	err = global.DB.Take(&userMo, claims.UserId).Error
+	if err != nil {
+		response.Fail(ctx, "系统错误，请刷新重试")
+		return
+	}
+	// 判断密码是否正确
+	exits, err := dao.IsPassword(PasswordRep.OldPassword, userMo.ID)
+	if err != nil || !exits {
+		response.Fail(ctx, "原始密码错误")
+		return
+	}
+	// 修改密码
+	err = global.DB.Model(&userMo).Update("password", PasswordRep.NewPassword).Error
+	if err != nil {
+		response.Fail(ctx, "修改失败")
+		return
+	}
+	response.OkWithMessage(ctx, "修改成功")
 }

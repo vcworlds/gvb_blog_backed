@@ -68,6 +68,7 @@ func AuthMiddlewareAdmin() gin.HandlerFunc {
 		}
 		if claims.Role != "管理员" {
 			response.Fail(ctx, "您没有该权限！如有问题请联系作者！")
+			ctx.Abort()
 			return
 		}
 		ctx.Set("claims", claims)

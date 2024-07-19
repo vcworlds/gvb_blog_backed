@@ -7,7 +7,7 @@ import (
 	"gvb_blog/global"
 	"gvb_blog/models"
 	"gvb_blog/response"
-	"gvb_blog/service"
+	"gvb_blog/service/menu_service"
 )
 
 // Create
@@ -19,7 +19,7 @@ import (
 // @Router /menu/create  [post]
 // @Success 200 {object} response.Response
 func (m MenuApi) Create(ctx *gin.Context) {
-	var menuService service.MenuService
+	var menuService menu_service.MenuService
 	err := ctx.ShouldBindJSON(&menuService)
 	if err != nil {
 		response.FailWithValidateError(err, &menuService, ctx)
@@ -111,7 +111,7 @@ func (m MenuApi) Delete(ctx *gin.Context) {
 // @Success 200 {object} response.Response
 func (m MenuApi) Update(ctx *gin.Context) {
 	menuId := ctx.Param("id")
-	var menuRe service.MenuService
+	var menuRe menu_service.MenuService
 	var menuMo models.MenuModel
 	err := global.DB.Take(&menuMo, menuId).Error
 	if err != nil {
@@ -179,10 +179,10 @@ func (m MenuApi) Show(ctx *gin.Context) {
 	// 跟据菜单id查询关联的图片
 	var menuImage []models.MenuImageModel
 	global.DB.Preload("ImageModel").Order("sort desc").Find(&menuImage, "menu_id in ?", menuIds)
-	var menuRes []service.MenuResponse
+	var menuRes []menu_service.MenuResponse
 	// 循环每一个菜单
 	for _, menu := range menuList {
-		images := []service.Image{}
+		images := []menu_service.Image{}
 		// 循环关联表拿到每一个菜单所对应的图片
 		for _, image := range menuImage {
 			// 如果菜单id和关联表的菜单id不一样则退出循环
@@ -190,12 +190,12 @@ func (m MenuApi) Show(ctx *gin.Context) {
 				continue
 			}
 			// 相同的话添加进去图片
-			images = append(images, service.Image{
+			images = append(images, menu_service.Image{
 				Id:   image.ImageID,
 				Path: image.ImageModel.Path,
 			})
 		}
-		menuRes = append(menuRes, service.MenuResponse{
+		menuRes = append(menuRes, menu_service.MenuResponse{
 			MenuModel: menu,
 			Image:     images,
 		})
@@ -213,7 +213,7 @@ func (m MenuApi) Show(ctx *gin.Context) {
 // @Router /menu/menuInfo  [get]
 // @Success 200 {object} response.Response
 func MenuInfo(ctx *gin.Context) {
-	var menuInfo []service.MenuInfo
+	var menuInfo []menu_service.MenuInfo
 	global.DB.Model(models.MenuModel{}).Select("id", "path", "title").Scan(&menuInfo)
 	response.OkWithData(ctx, menuInfo)
 }
@@ -233,17 +233,17 @@ func MenuDetail(ctx *gin.Context) {
 		response.Fail(ctx, "获取关联表失败")
 		return
 	}
-	var imageList []service.Image
+	var imageList []menu_service.Image
 	for _, image := range menuImage {
 		if menuModel.ID != image.MenuID {
 			continue
 		}
-		imageList = append(imageList, service.Image{
+		imageList = append(imageList, menu_service.Image{
 			Id:   image.ImageID,
 			Path: menuModel.Path,
 		})
 	}
-	menuRe := &service.MenuResponse{
+	menuRe := &menu_service.MenuResponse{
 		MenuModel: menuModel,
 		Image:     imageList,
 	}

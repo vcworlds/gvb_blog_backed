@@ -7,7 +7,7 @@ import (
 	"gvb_blog/global"
 	"gvb_blog/models"
 	"gvb_blog/response"
-	"gvb_blog/service"
+	"gvb_blog/service/advert_service"
 	"strings"
 )
 
@@ -20,7 +20,7 @@ import (
 // @Router /advert/create  [post]
 // @Success 200 {object} response.Response
 func (a AdvertApi) Create(ctx *gin.Context) {
-	var ar service.AdvertResponse
+	var ar advert_service.AdvertResponse
 	err := ctx.ShouldBindJSON(&ar)
 	if err != nil {
 		response.FailWithValidateError(err, &ar, ctx)
@@ -80,7 +80,7 @@ func (a AdvertApi) Update(ctx *gin.Context) {
 		response.Fail(ctx, "该广告信息被删除了")
 		return
 	}
-	var ads service.AdvertResponse
+	var ads advert_service.AdvertResponse
 	err = ctx.ShouldBindJSON(&ads)
 	if err != nil {
 		response.Fail(ctx, "数据绑定失败")

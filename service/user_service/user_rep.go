@@ -15,7 +15,12 @@ type RegisterRep struct {
 	Email      string `json:"email" gorm:"type:email" binding:"required" msg:"邮箱不能为空"`
 }
 
-type RoleUpdate struct {
-	Role   int  `json:"role" binding:"required,oneof=1 2 3 4"`
-	UserId uint `json:"user_id" binding:"required"`
+type RoleUpdateRep struct {
+	Role   int  `json:"role" binding:"required,oneof=1 2 3 4" msg:"角色未完善"`
+	UserId uint `json:"user_id" binding:"required" msg:"用户id未完善"`
+}
+
+type PasswordUpdateRep struct {
+	OldPassword string `json:"old_password" binding:"required" msg:"填写原始密码"`
+	NewPassword string `json:"new_password" binding:"required" msg:"填写新的密码"`
 }

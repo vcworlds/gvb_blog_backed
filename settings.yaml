@@ -9,7 +9,7 @@ logger:
     level: info
     prefix: '[gvb]'
     direct: ./logs
-    showLine: false
+    showLine: true
     logInConsole: false
 system:
     host: 0.0.0.0
