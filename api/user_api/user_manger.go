@@ -2,6 +2,7 @@ package user_api
 
 import (
 	"github.com/gin-gonic/gin"
+	"gvb_blog/common"
 	"gvb_blog/global"
 	"gvb_blog/models"
 	"gvb_blog/models/ctype"
@@ -12,7 +13,7 @@ import (
 )
 
 func (UserApi) Login(ctx *gin.Context) {
-	var userRes user_service.UserResponse
+	var userRes user_service.LoginResponse
 	err := ctx.ShouldBindJSON(&userRes)
 	if err != nil {
 		response.FailWithValidateError(err, &userRes, ctx)
@@ -60,7 +61,10 @@ func (UserApi) Register(ctx *gin.Context) {
 		response.Fail(ctx, "两次密码不一致")
 		return
 	}
-	hashPassword := utils.EncryptPassword(registerRes.Password, "PasswordSalt")
+	if registerRes.Salt == "" {
+		registerRes.Salt = "PasswordSalt"
+	}
+	hashPassword := utils.EncryptPassword(registerRes.Password, registerRes.Salt)
 	global.DB.Create(&models.UserModel{
 		NickName:   registerRes.NickName,
 		UserName:   registerRes.UserName,
@@ -73,4 +77,38 @@ func (UserApi) Register(ctx *gin.Context) {
 		SignStatus: ctype.SignEmail,
 	})
 	response.OkWithMessage(ctx, "注册成功")
+}
+
+func (u UserApi) UserList(ctx *gin.Context) {
+	var page models.Page
+	err := ctx.ShouldBindQuery(&page)
+	if err != nil {
+		response.Fail(ctx, "分页条件绑定失败")
+		return
+	}
+	option := common.Option{page}
+	userList, _, err := common.CommonPage[models.UserModel](models.UserModel{}, option)
+	if err != nil {
+		global.Log.Error(err)
+		response.Fail(ctx, "获取列表失败")
+	}
+	_claims, _ := ctx.Get("claims")
+	claims := _claims.(*jwt.Claims)
+	var userModel []models.UserModel
+	for _, user := range userList {
+		if claims.Role != "管理员" {
+			user.UserName = ""
+			user.Salt = "*****"
+			user.Tel = utils.DesensitizationPhone(user.Tel)
+			user.Email = utils.DesensitizationEmail(user.Email)
+		}
+		userModel = append(userModel, user)
+	}
+	// 分页获取
+	response.OkWithData(ctx, userModel)
+
+}
+
+func (u UserApi) RoleUpdate(ctx *gin.Context) {
+
 }

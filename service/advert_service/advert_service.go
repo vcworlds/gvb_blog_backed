@@ -1,4 +1,4 @@
-package service
+package advert_service
 
 import (
 	"gvb_blog/global"

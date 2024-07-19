@@ -3,6 +3,7 @@ package routers
 import (
 	"github.com/gin-gonic/gin"
 	"gvb_blog/api"
+	"gvb_blog/middleware"
 )
 
 type UserGroup struct {
@@ -10,7 +11,8 @@ type UserGroup struct {
 }
 
 func (r *UserGroup) UserRouter() {
-	var userApi = api.ApiRouterApp
-	r.POST("/register", userApi.UserApi.Register)
-	r.POST("/login", userApi.UserApi.Login)
+	userApi := api.ApiRouterApp.UserApi
+	r.POST("/register", userApi.Register)
+	r.POST("/login", userApi.Login)
+	r.GET("/userInfo", middleware.AuthMiddleware(), userApi.UserList)
 }

@@ -1,4 +1,4 @@
-package service
+package menu_service
 
 import (
 	"gvb_blog/models"
