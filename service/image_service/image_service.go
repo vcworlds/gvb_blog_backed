@@ -6,7 +6,6 @@ import (
 	"gvb_blog/dao"
 	"gvb_blog/global"
 	"gvb_blog/models"
-	"gvb_blog/models/ctype"
 	"gvb_blog/plugins/qiniu"
 	"gvb_blog/utils"
 	"io"
@@ -90,7 +89,6 @@ func ImageService(fileList []*multipart.FileHeader, ctx *gin.Context) []ImageRes
 				Suffix:       minSuffix,
 				FileLocation: 2,
 			})
-			fmt.Println(ctype.FileLocationType(2).String())
 			resList = append(resList, ImageResponse{
 				IsSuccess: true,
 				Msg:       "上传七牛云成功",

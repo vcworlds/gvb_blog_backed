@@ -49,18 +49,12 @@ func (a AdvertApi) Delete(ctx *gin.Context) {
 		response.Fail(ctx, "数据绑定失败")
 		return
 	}
-	var am []models.AdvertModel
-	count := global.DB.Find(&am, ids.Ids).RowsAffected
-	if count == 0 {
-		response.Fail(ctx, "获取数据失败")
+	res := advert_service.DeleteAdvertService(ids.Ids)
+	if res.Code != 200 {
+		response.Fail(ctx, res.Msg)
 		return
 	}
-	err = global.DB.Delete(&am).Error
-	if err != nil {
-		response.Fail(ctx, "数据删除失败")
-		return
-	}
-	response.OkWithMessage(ctx, fmt.Sprintf("删除成功,共删除了%d条数据", count))
+	response.OkWithMessage(ctx, fmt.Sprintf("删除成功,共删除了%d条数据", res.Data))
 }
 
 // Update
@@ -73,27 +67,19 @@ func (a AdvertApi) Delete(ctx *gin.Context) {
 // @Success 200 {object} response.Response{data=string}
 func (a AdvertApi) Update(ctx *gin.Context) {
 	id := ctx.Param("id")
-	// 判断id是否存在
-	var am models.AdvertModel
-	err := global.DB.Take(&am, id).Error
-	if err != nil {
-		response.Fail(ctx, "该广告信息被删除了")
-		return
-	}
 	var ads advert_service.AdvertResponse
-	err = ctx.ShouldBindJSON(&ads)
+	err := ctx.ShouldBindJSON(&ads)
 	if err != nil {
 		response.Fail(ctx, "数据绑定失败")
 		return
 	}
-	global.DB.Model(&am).Updates(map[string]any{
-		"title":   ads.Title,
-		"href":    ads.Href,
-		"images":  ads.Images,
-		"is_show": ads.IsShow,
-	})
+	res := ads.UpdateAdvertService(id)
+	if res.Code != 200 {
+		response.Fail(ctx, res.Msg)
+		return
+	}
 	response.Ok(ctx, "更新成功", gin.H{
-		"list": am,
+		"list": res.Data,
 	})
 }
 

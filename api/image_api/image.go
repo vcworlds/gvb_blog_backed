@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"gvb_blog/common"
-	"gvb_blog/global"
+	"gvb_blog/dao/advert_dao"
 	"gvb_blog/models"
 	"gvb_blog/response"
 	"gvb_blog/service/image_service"
+	"net/http"
 )
 
 type IImageApi interface {
@@ -41,7 +42,17 @@ func (ImageApi) Create(ctx *gin.Context) {
 		return
 	}
 	resList := image_service.ImageService(fileList, ctx)
-	response.OkWithData(ctx, resList)
+	for _, res := range resList {
+		if res.IsSuccess == false {
+			response.Result(ctx, http.StatusFailedDependency, 422, res.Msg, res.Name)
+			continue
+		} else {
+			response.Ok(ctx, res.Msg, map[string]any{
+				"imageUrl": res.Name,
+			})
+		}
+	}
+
 }
 
 // Show 获取图片
@@ -82,14 +93,16 @@ func (a ImageApi) Delete(ctx *gin.Context) {
 		response.Fail(ctx, "绑定数据失败")
 		return
 	}
-	var fileList []models.ImageModel
-	count := global.DB.Find(&fileList, ids.Ids).RowsAffected
+	count, err := advert_dao.DeleteUserList(ids.Ids)
 	if count == 0 {
 		response.Fail(ctx, "没有找到图片信息")
 		return
 	}
-	deleteRow := global.DB.Delete(&fileList).RowsAffected
-	response.OkWithMessage(ctx, fmt.Sprintf("共删除了:%d条数据", deleteRow))
+	if err != nil {
+		response.Fail(ctx, "删除失败")
+		return
+	}
+	response.OkWithMessage(ctx, fmt.Sprintf("共删除了:%d条数据", count))
 }
 
 // Update 更新
