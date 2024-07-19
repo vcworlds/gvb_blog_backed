@@ -1,7 +1,10 @@
 package middleware
 
 import (
+	"context"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 	"gvb_blog/global"
 	"gvb_blog/models"
 	"gvb_blog/response"
@@ -28,10 +31,25 @@ func AuthMiddleware() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
+
 		var userMo models.UserModel
 		err = global.DB.Take(&userMo, claims.UserId).Error
 		if err != nil {
 			response.Fail(ctx, "获取token用户失败")
+			ctx.Abort()
+			return
+		}
+		// 判断token是否存在redis
+		tokenKey := fmt.Sprintf("token_%d", claims.UserId)
+		_, err = global.Redis.Get(context.Background(), tokenKey).Result()
+		if err == redis.Nil {
+			global.Log.Error(err)
+			response.Fail(ctx, "token已失效")
+			ctx.Abort()
+			return
+		} else if err != nil {
+			global.Log.Error(err)
+			response.Fail(ctx, "token不存在")
 			ctx.Abort()
 			return
 		}

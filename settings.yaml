@@ -63,5 +63,5 @@ qi_niu:
 redis:
     ip: 127.0.0.1
     addr: 6379
-    password:   "redis"
+    password: ""
     pool_size: 100

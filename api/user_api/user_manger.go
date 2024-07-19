@@ -1,8 +1,10 @@
 package user_api
 
 import (
+	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 	"gvb_blog/common"
 	"gvb_blog/dao"
 	"gvb_blog/global"
@@ -12,6 +14,8 @@ import (
 	"gvb_blog/service/user_service"
 	"gvb_blog/utils"
 	"gvb_blog/utils/jwt"
+	"log"
+	"time"
 )
 
 func (UserApi) Login(ctx *gin.Context) {
@@ -39,7 +43,24 @@ func (UserApi) Login(ctx *gin.Context) {
 	token, err := jwt.ReleaseToken(userMo)
 	if err != nil {
 		global.Log.Error(err)
-		response.Fail(ctx, "未知的错误")
+		response.Fail(ctx, "未知的错误,请刷新重试")
+		return
+	}
+	// 将token存储到redis
+	expiration := global.Config.Jwt.Expires * 60 * 60
+	id := fmt.Sprintf("token_%d", userMo.ID)
+
+	if global.Redis == nil {
+		log.Println("global.Redis is nil")
+		response.Fail(ctx, "Redis 初始化失败")
+		return
+	}
+
+	err = global.Redis.Set(context.Background(), id, token, time.Duration(expiration)*time.Second).Err()
+	if err != nil {
+		// 处理错误
+		log.Println("Error setting token in Redis:", err)
+		response.Fail(ctx, "存储 Token 失败")
 		return
 	}
 	response.Ok(ctx, "登录成功", gin.H{"token": token})
@@ -97,7 +118,11 @@ func (UserApi) UserList(ctx *gin.Context) {
 		global.Log.Error(err)
 		response.Fail(ctx, "获取列表失败")
 	}
-	_claims, _ := ctx.Get("claims")
+	_claims, exits := ctx.Get("claims")
+	if !exits {
+		response.Fail(ctx, "token不存在")
+		return
+	}
 	claims := _claims.(*jwt.Claims)
 	var userModel []models.UserModel
 	for _, user := range userList {
@@ -166,10 +191,42 @@ func (UserApi) PasswordUpdate(ctx *gin.Context) {
 		return
 	}
 	// 修改密码
-	err = global.DB.Model(&userMo).Update("password", PasswordRep.NewPassword).Error
+	newPassword := utils.EncryptPassword(PasswordRep.NewPassword, userMo.Salt)
+	err = global.DB.Model(&userMo).Update("password", newPassword).Error
 	if err != nil {
 		response.Fail(ctx, "修改失败")
 		return
 	}
 	response.OkWithMessage(ctx, "修改成功")
+}
+
+// 注销登录，将token变为无效
+func (receiver UserApi) UserLogout(ctx *gin.Context) {
+	_claims, exits := ctx.Get("claims")
+	if !exits {
+		response.Fail(ctx, "token不存在")
+		return
+	}
+	claims := _claims.(*jwt.Claims)
+	tokenKey := fmt.Sprintf("token_%d", claims.UserId)
+	_, err := global.Redis.Get(context.Background(), tokenKey).Result()
+	if err == redis.Nil {
+		global.Log.Error(err)
+		response.Fail(ctx, "token不存在")
+		ctx.Abort()
+		return
+	} else if err != nil {
+		global.Log.Error(err)
+		response.Fail(ctx, "token不存在")
+		ctx.Abort()
+		return
+	}
+	// 将 token 过期时间设置为0，几乎立即失效
+	err = global.Redis.Expire(context.Background(), tokenKey, 0).Err()
+	if err != nil {
+		global.Log.Error("Error setting token expiration:", err)
+		response.Fail(ctx, "注销失败")
+		return
+	}
+	response.OkWithMessage(ctx, "注销成功")
 }

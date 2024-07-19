@@ -22,6 +22,10 @@ func main() {
 	global.DB = core.InitGorm()
 	// 配置redis
 	global.Redis = core.ConnectRedis()
+	if global.Redis == nil {
+		global.Log.Fatal("Redis client initialization failed")
+		return
+	}
 	// 命令行迁移
 	option := flag.Parse()
 	if flag.IsStopWeb(&option) {

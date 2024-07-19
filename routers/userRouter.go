@@ -17,4 +17,5 @@ func (r *UserGroup) UserRouter() {
 	r.GET("/userInfo", middleware.AuthMiddleware(), userApi.UserList)
 	r.PUT("/userRole", middleware.AuthMiddlewareAdmin(), userApi.RoleUpdate)
 	r.PUT("/userPassword", middleware.AuthMiddleware(), userApi.PasswordUpdate)
+	r.GET("/userLogout", middleware.AuthMiddleware(), userApi.UserLogout)
 }
