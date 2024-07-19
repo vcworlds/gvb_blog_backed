@@ -4,16 +4,15 @@ import (
 	"github.com/golang-jwt/jwt"
 	"gvb_blog/global"
 	"gvb_blog/models"
-	"gvb_blog/models/ctype"
 	"time"
 )
 
 var jwtKey = []byte("asdfghjkl")
 
 type Claims struct {
-	UserId   uint       `json:"user_id"`
-	UserName string     `json:"user_name"`
-	Role     ctype.Role `json:"role"`
+	UserId   uint   `json:"user_id"`
+	UserName string `json:"user_name"`
+	Role     string `json:"role"`
 	jwt.StandardClaims
 }
 
@@ -23,7 +22,7 @@ func ReleaseToken(user models.UserModel) (string, error) {
 	claims := &Claims{
 		UserId:   user.ID,
 		UserName: user.UserName,
-		Role:     user.Role,
+		Role:     user.Role.String(),
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 			IssuedAt:  time.Now().Unix(),
@@ -38,6 +37,7 @@ func ReleaseToken(user models.UserModel) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	return tokenString, nil
 }
 
