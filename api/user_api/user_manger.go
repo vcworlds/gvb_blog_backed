@@ -87,8 +87,14 @@ func (UserApi) Register(ctx *gin.Context) {
 		response.Fail(ctx, "两次密码不一致")
 		return
 	}
+	// 判断邮箱
+	exits := utils.IsValidEmail(registerRes.Email)
+	if !exits {
+		response.Fail(ctx, "邮箱不合规范")
+		return
+	}
 	if registerRes.Salt == "" {
-		registerRes.Salt = userMo.Salt
+		registerRes.Salt = "PasswordSalt"
 	}
 	hashPassword := utils.EncryptPassword(registerRes.Password, registerRes.Salt)
 	global.DB.Create(&models.UserModel{

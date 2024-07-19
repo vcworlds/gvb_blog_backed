@@ -41,7 +41,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 		// 判断token是否存在redis
 		tokenKey := fmt.Sprintf("token_%d", claims.UserId)
-		_, err = global.Redis.Get(context.Background(), tokenKey).Result()
+		tokenR, err := global.Redis.Get(context.Background(), tokenKey).Result()
 		if err == redis.Nil {
 			global.Log.Error(err)
 			response.Fail(ctx, "token已失效")
@@ -50,6 +50,11 @@ func AuthMiddleware() gin.HandlerFunc {
 		} else if err != nil {
 			global.Log.Error(err)
 			response.Fail(ctx, "token不存在")
+			ctx.Abort()
+			return
+		}
+		if tokenR != token.Raw {
+			response.Fail(ctx, "token不正确")
 			ctx.Abort()
 			return
 		}
