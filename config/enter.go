@@ -10,4 +10,5 @@ type Config struct {
 	Uploads  Uploads  `yaml:"uploads"`
 	Jwt      Jwt      `canGet:"jwt" yaml:"jwt"`
 	QiNiu    QiNiu    `canGet:"qiNiu" yaml:"qi_niu"`
+	Redis    Redis    `yaml:"redis"`
 }

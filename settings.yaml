@@ -60,3 +60,8 @@ qi_niu:
     cdn: ""
     zone: z2
     size: 5
+redis:
+    ip: 127.0.0.1
+    addr: 6379
+    password:   "redis"
+    pool_size: 100

@@ -1,6 +1,7 @@
 package global
 
 import (
+	"github.com/go-redis/redis/v8"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"gvb_blog/config"
@@ -19,4 +20,5 @@ var (
 		"gif",
 		"svg",
 	}
+	Redis *redis.Client
 )

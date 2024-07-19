@@ -20,19 +20,14 @@ func main() {
 	global.Log = core.InitLogger()
 	// 配置gorm
 	global.DB = core.InitGorm()
+	// 配置redis
+	global.Redis = core.ConnectRedis()
 	// 命令行迁移
 	option := flag.Parse()
 	if flag.IsStopWeb(&option) {
 		flag.SwitchOption(&option)
 		return
 	}
-	//// 自动执行swag文件
-	//cmd := exec.Command("swag", "init")
-	//err := cmd.Run()
-	//if err != nil {
-	//	panic(err)
-	//}
-
 	// 路由配置
 	r := routers.InitRouter()
 	add := global.Config.System.Addr()
