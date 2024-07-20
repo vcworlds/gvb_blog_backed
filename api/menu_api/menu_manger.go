@@ -25,48 +25,12 @@ func (m MenuApi) Create(ctx *gin.Context) {
 		response.FailWithValidateError(err, &menuService, ctx)
 		return
 	}
-	// 判断是否重复
-	var menuM []models.MenuModel
-	count := global.DB.Find(&menuM, "title = ? or path = ?", menuService.Title, menuService.Title).RowsAffected
-	if count != 0 {
-		response.Fail(ctx, "该路由已存在")
+	res := menuService.MenuCreateService()
+	if res.Code != 200 {
+		response.Fail(ctx, res.Msg)
 		return
 	}
-	// 创建表
-	menuModel := &models.MenuModel{
-		Title:        menuService.Title,
-		Path:         menuService.Path,
-		Slogan:       menuService.Slogan,
-		Abstract:     menuService.Abstract,
-		AbstractTime: menuService.AbstractTime,
-		MenuTime:     menuService.MenuTime,
-		Sort:         menuService.Sort,
-	}
-	err = global.DB.Create(&menuModel).Error
-	if err != nil {
-		global.Log.Error(err)
-		response.Fail(ctx, "菜单创建失败")
-		return
-	}
-	if len(menuService.ImageSort) == 0 {
-		response.Fail(ctx, "菜单排序有问题")
-		return
-	}
-	// 创建关联表
-	var menuImageList []models.MenuImageModel
-	for _, sort := range menuService.ImageSort {
-		menuImageList = append(menuImageList, models.MenuImageModel{
-			MenuID:  menuModel.ID,
-			ImageID: sort.ImageId,
-			Sort:    sort.Sort,
-		})
-	}
-	err = global.DB.Create(&menuImageList).Error
-	if err != nil {
-		response.Fail(ctx, "关联表失败")
-		return
-	}
-	response.OkWithMessage(ctx, "创建成功")
+	response.OkWithMessage(ctx, res.Msg)
 }
 
 // Delete
@@ -123,43 +87,11 @@ func (m MenuApi) Update(ctx *gin.Context) {
 		response.FailWithValidateError(err, &menuRe, ctx)
 		return
 	}
-	// 将关联表清空
-	err = global.DB.Model(&menuMo).Association("MenuImages").Clear()
-	if err != nil {
-		response.Fail(ctx, "关联表更新失败")
-		return
+	res := menuRe.MenuUpdateService(menuMo)
+	if res.Code != 200 {
+		response.Fail(ctx, res.Msg)
 	}
-	// 创建关联表
-	if len(menuRe.ImageSort) > 0 {
-		var imageList []models.MenuImageModel
-		for _, image := range menuRe.ImageSort {
-			imageList = append(imageList, models.MenuImageModel{
-				MenuID:  menuMo.ID,
-				ImageID: image.ImageId,
-				Sort:    image.Sort,
-			})
-		}
-		err = global.DB.Create(&imageList).Error
-		if err != nil {
-			response.Fail(ctx, "关联表更新失败")
-			return
-		}
-	}
-	// 普通更新
-	err = global.DB.Model(&menuMo).Updates(map[string]any{
-		"title":         menuRe.Title,
-		"path":          menuRe.Path,
-		"slogan":        menuRe.Slogan,
-		"abstract":      menuRe.Abstract,
-		"abstract_time": menuRe.AbstractTime,
-		"menu_time":     menuRe.MenuTime,
-		"sort":          menuRe.Sort,
-	}).Error
-	if err != nil {
-		response.Fail(ctx, "更新数据失败")
-		return
-	}
-	response.OkWithMessage(ctx, "更新成功")
+	response.OkWithMessage(ctx, res.Msg)
 
 }
 

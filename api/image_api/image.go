@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"gvb_blog/common"
-	"gvb_blog/dao/advert_dao"
+	"gvb_blog/dao"
+	"gvb_blog/global"
 	"gvb_blog/models"
 	"gvb_blog/response"
 	"gvb_blog/service/image_service"
@@ -93,7 +94,21 @@ func (a ImageApi) Delete(ctx *gin.Context) {
 		response.Fail(ctx, "绑定数据失败")
 		return
 	}
-	count, err := advert_dao.DeleteUserList(ids.Ids)
+	var menuImage []models.MenuImageModel
+	if err := global.DB.Find(&menuImage, "image_id in ?", ids.Ids).Error; err != nil {
+		global.Log.Error(err)
+		response.Fail(ctx, "查询失败")
+		return
+	}
+	// 更新 menu_image_models 表中 image_id 为 nil
+	if err := global.DB.Model(&models.MenuImageModel{}).Where("image_id in ?", ids.Ids).Update("image_id", nil).Error; err != nil {
+		global.Log.Error(err)
+		response.Fail(ctx, "更新失败")
+		return
+	}
+
+	global.Log.Error(err)
+	count, err := dao.DeleteCommon[models.ImageModel]([]models.ImageModel{}, ids.Ids)
 	if count == 0 {
 		response.Fail(ctx, "没有找到图片信息")
 		return

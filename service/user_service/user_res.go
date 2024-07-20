@@ -1,12 +1,12 @@
 package user_service
 
-type LoginResponse struct {
+type LoginService struct {
 	UserName string `json:"user_name" binding:"required" msg:"用户名不能为空"`
 	Password string `json:"password" binding:"required" msg:"密码不能为空"`
 	Token    string `json:"token"`
 }
 
-type RegisterRep struct {
+type RegisterService struct {
 	UserName   string `json:"user_name" binding:"required" msg:"用户名不能为空"`
 	NickName   string `json:"nick_name" binding:"required" msg:"昵称不能为空"`
 	Password   string `json:"password" binding:"required" msg:"密码不能为空"`
@@ -15,12 +15,12 @@ type RegisterRep struct {
 	Email      string `json:"email" gorm:"type:email" binding:"required" msg:"邮箱不能为空"`
 }
 
-type RoleUpdateRep struct {
+type RoleUpdateService struct {
 	Role   int  `json:"role" binding:"required,oneof=1 2 3 4" msg:"角色未完善"`
 	UserId uint `json:"user_id" binding:"required" msg:"用户id未完善"`
 }
 
-type PasswordUpdateRep struct {
+type PasswordUpdateService struct {
 	OldPassword string `json:"old_password" binding:"required" msg:"填写原始密码"`
 	NewPassword string `json:"new_password" binding:"required" msg:"填写新的密码"`
 }

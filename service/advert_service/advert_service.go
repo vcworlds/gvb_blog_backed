@@ -1,8 +1,7 @@
 package advert_service
 
 import (
-	"fmt"
-	"gvb_blog/dao/advert_dao"
+	"gvb_blog/dao"
 	"gvb_blog/global"
 	"gvb_blog/models"
 	"gvb_blog/response"
@@ -41,7 +40,7 @@ func (a AdvertResponse) AdvertCreatService() response.Response {
 }
 
 func DeleteAdvertService(ids []uint) *response.Response {
-	count, err := advert_dao.DeleteUserList(ids)
+	count, err := dao.DeleteCommon[models.AdvertModel]([]models.AdvertModel{}, ids)
 	res := &response.Response{
 		Code: 200,
 		Msg:  "删除成功",
@@ -62,26 +61,29 @@ func DeleteAdvertService(ids []uint) *response.Response {
 }
 
 func (a AdvertResponse) UpdateAdvertService(id string) *response.Response {
-	// 判断id是否存在
-	var am models.AdvertModel
-	err := global.DB.Take(&am, id).Error
 	res := &response.Response{
 		Code: 200,
 		Msg:  "",
 		Data: nil,
 	}
+	// 判断id是否存在
+	err, am := dao.IsModelId[models.AdvertModel](models.AdvertModel{}, id)
 	if err != nil {
 		res.Code = http.StatusUnprocessableEntity
 		res.Msg = "查询数据失败"
 		return res
 	}
-	fmt.Println(am)
-	global.DB.Model(&am).Updates(map[string]any{
+	err = global.DB.Model(&am).Updates(map[string]any{
 		"title":   a.Title,
 		"href":    a.Href,
 		"images":  a.Images,
 		"is_show": a.IsShow,
-	})
+	}).Error
+	if err != nil {
+		res.Code = http.StatusUnprocessableEntity
+		res.Msg = "更新数据失败"
+		return res
+	}
 	res.Msg = "更新成功"
 	res.Data = am
 	return res

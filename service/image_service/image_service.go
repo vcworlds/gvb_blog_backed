@@ -33,6 +33,7 @@ func ImageService(fileList []*multipart.FileHeader, ctx *gin.Context) []ImageRes
 	for _, file := range fileList {
 		// 判断是否合法后缀
 		pathExt := path.Ext(file.Filename)
+		// 截取后缀
 		suffix := strings.TrimPrefix(pathExt, ".")
 		minSuffix := strings.ToLower(suffix)
 		ok, _ := utils.InList(minSuffix, global.WhiteImageList)
@@ -66,7 +67,7 @@ func ImageService(fileList []*multipart.FileHeader, ctx *gin.Context) []ImageRes
 			continue
 		}
 		imageHash := utils.Md5(fileData)
-		// 判断图片是否存在数据库
+		// 判断图片内容是否存在数据库
 		image, err := dao.ImageIsExit(imageHash)
 		if err == nil {
 			resList = append(resList, ImageResponse{
@@ -75,7 +76,8 @@ func ImageService(fileList []*multipart.FileHeader, ctx *gin.Context) []ImageRes
 				Name:      image.Path,
 			})
 			continue
-		} // 判断是否在七牛存储
+		}
+		// 判断是否将图片存在七牛存储
 		if global.Config.QiNiu.Enable {
 			filePath, err := qiniu.UploadImage(fileData, "gvb", file.Filename)
 			if err != nil {
@@ -83,7 +85,7 @@ func ImageService(fileList []*multipart.FileHeader, ctx *gin.Context) []ImageRes
 				continue
 			}
 			global.DB.Create(&models.ImageModel{
-				Path:         upPath,
+				Path:         filePath,
 				Hash:         imageHash,
 				Name:         file.Filename,
 				Suffix:       minSuffix,
@@ -108,10 +110,12 @@ func ImageService(fileList []*multipart.FileHeader, ctx *gin.Context) []ImageRes
 		}
 		// 图片存入数据库
 		global.DB.Create(&models.ImageModel{
-			Path:   upPath,
-			Hash:   imageHash,
-			Name:   file.Filename,
-			Suffix: minSuffix,
+			Path:         upPath,
+			Hash:         imageHash,
+			Name:         file.Filename,
+			Suffix:       minSuffix,
+			Type:         "本地",
+			FileLocation: 1,
 		})
 		resList = append(resList, ImageResponse{
 			IsSuccess: true,
