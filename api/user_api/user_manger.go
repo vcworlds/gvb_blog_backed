@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
+	"gvb_blog/common"
+	"gvb_blog/dao"
 	"gvb_blog/global"
 	"gvb_blog/models"
 	"gvb_blog/response"
@@ -138,4 +140,29 @@ func (receiver UserApi) UserLogout(ctx *gin.Context) {
 		return
 	}
 	response.OkWithMessage(ctx, "注销成功")
+}
+
+// 删除用户
+func (UserApi) UserDelete(ctx *gin.Context) {
+	var ids common.RemoveFileList
+	err := ctx.ShouldBindJSON(&ids)
+	if err != nil {
+		response.FailWithValidateError(err, &ids, ctx)
+		return
+	}
+	// 判断id是否存在
+	var userMo []models.UserModel
+	err = global.DB.Find(&userMo, ids.Ids).Error
+	if err != nil {
+		global.Log.Error(err)
+		response.Fail(ctx, fmt.Sprintf("用户id：%d不存在", ids.Ids))
+		return
+	}
+	count, err := dao.DeleteCommon[models.UserModel](userMo, ids.Ids)
+	if err != nil {
+		global.Log.Error(err)
+		response.Fail(ctx, "删除失败")
+		return
+	}
+	response.OkWithMessage(ctx, fmt.Sprintf("删除成功，共删除%d个用户", count))
 }

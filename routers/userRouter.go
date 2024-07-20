@@ -18,4 +18,5 @@ func (r *UserGroup) UserRouter() {
 	r.PUT("/userRole", middleware.AuthMiddlewareAdmin(), userApi.RoleUpdate)
 	r.PUT("/userPassword", middleware.AuthMiddleware(), userApi.PasswordUpdate)
 	r.GET("/userLogout", middleware.AuthMiddleware(), userApi.UserLogout)
+	r.DELETE("/userDelete", middleware.AuthMiddlewareAdmin(), userApi.UserDelete)
 }

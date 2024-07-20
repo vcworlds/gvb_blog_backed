@@ -6,7 +6,7 @@ import (
 )
 
 type RemoveFileList struct {
-	Ids []uint `binding:"required" msg:"ids参数不能为空"`
+	Ids []uint `json:"ids" binding:"required" msg:"ids参数不能为空"`
 }
 type Option struct {
 	models.Page
